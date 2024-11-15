@@ -25,6 +25,15 @@ public class AccountService {
     }
 
     public Account createAccount(String login, String password, Double balance) {
+        if (login.length() < 4) {
+            throw new IllegalArgumentException("Invalid login");
+        }
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        if (balance < 0) {
+            throw new IllegalArgumentException("Invalid balance");
+        }
         return accountRepository.save(new Account(login, password, balance));
     }
 
@@ -32,21 +41,17 @@ public class AccountService {
         accountRepository.deleteById(id);
     }
 
-    public Account updatePassword(Long id, String password) {
-        return accountRepository.updatePasswordById(id, password);
+    public void updatePassword(Long id, String password) {
+        accountRepository.updatePasswordById(id, password);
     }
 
-    public Account updateLogin(Long id, String login) {
-        return accountRepository.updateLoginById(id, login);
-    }
-
-    public Account updateBalance(Long id, Double balance) {
-        return accountRepository.updateBalanceById(id, balance);
+    public void updateLogin(Long id, String login) {
+        accountRepository.updateLoginById(id, login);
     }
 
     @Transactional
     public List<Account> sendMoney(Long idSender, Long idReceiver, Double amount) throws IllegalAccessException {
-        if (idSender == null || idReceiver == null || amount == null || amount <= 10) {
+        if (idSender == null || idReceiver == null || amount == null) {
             throw new IllegalAccessException("IdSender, IdReceiver and Amount are required");
         }
 

@@ -24,7 +24,7 @@ public class AccountController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Account>> getAccount(@PathVariable Long id) {
-        if (accountService.getAccountById(id).isPresent()) {
+        if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(accountService.getAccountById(id), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(accountService.getAccountById(id), HttpStatus.OK);
@@ -44,8 +44,8 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/{login}")
-    public ResponseEntity<Account> updateLogin(@PathVariable Long id, @PathVariable String login) {
+    @PatchMapping("/{id}/l/{login}")
+    public ResponseEntity<Void> updateLogin(@PathVariable Long id, @PathVariable String login) {
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -53,8 +53,8 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/{password}")
-    public ResponseEntity<Account> updatePassword(@PathVariable Long id, @PathVariable String password) {
+    @PatchMapping("/{id}/p/{password}")
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @PathVariable String password) {
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -62,15 +62,26 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{idSender}/{idReceiver}/{balance}")
-    public ResponseEntity<List<Account>> updateBalance(@PathVariable Long idSender, @PathVariable Long idReceiver, Double balance) throws IllegalAccessException {
+    @PutMapping("/{idSender}/{idReceiver}/send/{balance}")
+    public ResponseEntity<List<Optional<Account>>> updateBalance(
+            @PathVariable Long idSender,
+            @PathVariable Long idReceiver,
+            @PathVariable Double balance) throws IllegalAccessException {
+
         if (accountService.getAccountById(idSender).isEmpty() || accountService.getAccountById(idReceiver).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        if (balance <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         accountService.sendMoney(idSender, idReceiver, balance);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        List<Optional<Account>> accounts = List.of(accountService.getAccountById(idSender), accountService.getAccountById(idReceiver));
+
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
+
     }
-
-
 
 }
