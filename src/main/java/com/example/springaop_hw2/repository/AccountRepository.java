@@ -23,4 +23,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("UPDATE Account a SET a.balance = :balance WHERE a.id = :id")
     void updateBalanceById(Long id, Double balance);
 
+    @Query("SELECT a FROM Account a WHERE a.login = :login")
+    Account findByLogin(String login);
+
 }

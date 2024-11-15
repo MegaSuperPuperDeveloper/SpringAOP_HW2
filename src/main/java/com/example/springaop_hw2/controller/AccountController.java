@@ -1,6 +1,7 @@
 package com.example.springaop_hw2.controller;
 
 import com.example.springaop_hw2.model.Account;
+import com.example.springaop_hw2.model.enums.Role;
 import com.example.springaop_hw2.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class AccountController {
 
     @PostMapping("/{login}/{password}/{balance}")
     public ResponseEntity<Account> createAccount(@PathVariable String login, @PathVariable String password, @PathVariable Double balance) {
-        return new ResponseEntity<>(accountService.createAccount(login, password, balance), HttpStatus.CREATED);
+        return new ResponseEntity<>(accountService.createAccount(login, password, balance, Role.ROLE_USER), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

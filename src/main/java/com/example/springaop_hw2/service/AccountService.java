@@ -1,6 +1,7 @@
 package com.example.springaop_hw2.service;
 
 import com.example.springaop_hw2.model.Account;
+import com.example.springaop_hw2.model.enums.Role;
 import com.example.springaop_hw2.repository.AccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,17 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
-    public Account createAccount(String login, String password, Double balance) {
+    public Account createAccount(String login, String password, Double balance, Role role) {
         if (login.length() < 4) {
             throw new IllegalArgumentException("Invalid login");
         }
-        if (password.length() < 6) {
+        if (password.length() < 4) {
             throw new IllegalArgumentException("Invalid password");
         }
         if (balance < 0) {
             throw new IllegalArgumentException("Invalid balance");
         }
-        return accountRepository.save(new Account(login, password, balance));
+        return accountRepository.save(new Account(login, password, balance, role));
     }
 
     public void deleteAccountById(Long id) {
