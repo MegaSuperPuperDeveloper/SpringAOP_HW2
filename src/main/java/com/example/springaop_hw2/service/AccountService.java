@@ -25,6 +25,14 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
+    /**
+     * Method is required to create a new user
+     * @param login can't be less than 4
+     * @param password can't be less than 4
+     * @param balance can't be less than 0
+     * @param role user's role
+     * @return new user
+     */
     public Account createAccount(String login, String password, Double balance, Role role) {
         if (login.length() < 4) {
             throw new IllegalArgumentException("Invalid login");
@@ -50,6 +58,14 @@ public class AccountService {
         accountRepository.updateLoginById(id, login);
     }
 
+    /**
+     * Method is required for money transactions using user id
+     * @param idSender sender id
+     * @param idReceiver receiver id
+     * @param amount amount of money
+     * @return members of transaction
+     * @throws IllegalAccessException
+     */
     @Transactional
     public List<Account> sendMoney(Long idSender, Long idReceiver, Double amount) throws IllegalAccessException {
         if (idSender == null || idReceiver == null || amount == null) {
