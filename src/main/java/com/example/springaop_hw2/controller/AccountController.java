@@ -3,6 +3,8 @@ package com.example.springaop_hw2.controller;
 import com.example.springaop_hw2.model.Account;
 import com.example.springaop_hw2.model.enums.Role;
 import com.example.springaop_hw2.service.AccountService;
+import com.example.springaop_hw2.service.FileGateway;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +19,16 @@ import java.util.Optional;
 public class AccountController {
 
     private final AccountService accountService;
+    private final FileGateway fileGateway;
 
     /**
      * Method is required to return list of all users
      * @return list of all users
      */
     @GetMapping
-    public ResponseEntity<Iterable<Account>> getAccounts() {
+    public ResponseEntity<Iterable<Account>> getAccounts(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
         return new ResponseEntity<>(accountService.getAllAccounts(), HttpStatus.OK);
     }
 
@@ -33,7 +38,10 @@ public class AccountController {
      * @return user using user id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Account>> getAccount(@PathVariable Long id) {
+    public ResponseEntity<Optional<Account>> getAccount(@PathVariable Long id, HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
+
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(accountService.getAccountById(id), HttpStatus.NOT_FOUND);
         }
@@ -48,7 +56,10 @@ public class AccountController {
      * @return new user
      */
     @PostMapping("/{login}/{password}/{balance}")
-    public ResponseEntity<Account> createAccount(@PathVariable String login, @PathVariable String password, @PathVariable Double balance) {
+    public ResponseEntity<Account> createAccount(@PathVariable String login, @PathVariable String password, @PathVariable Double balance, HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
+
         return new ResponseEntity<>(accountService.createAccount(login, password, balance, Role.ROLE_USER), HttpStatus.CREATED);
     }
 
@@ -58,7 +69,10 @@ public class AccountController {
      * @return only status OK or NOT_FOUND
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id, HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
+
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -73,7 +87,10 @@ public class AccountController {
      * @return only status ok
      */
     @PatchMapping("/{id}/l/{login}")
-    public ResponseEntity<Void> updateLogin(@PathVariable Long id, @PathVariable String login) {
+    public ResponseEntity<Void> updateLogin(@PathVariable Long id, @PathVariable String login, HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
+
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -88,7 +105,10 @@ public class AccountController {
      * @return only status ok.
      */
     @PatchMapping("/{id}/p/{password}")
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @PathVariable String password) {
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @PathVariable String password, HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
+
         if (accountService.getAccountById(id).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -104,7 +124,10 @@ public class AccountController {
     public ResponseEntity<List<Optional<Account>>> updateBalance(
             @PathVariable Long idSender,
             @PathVariable Long idReceiver,
-            @PathVariable Double balance) throws IllegalAccessException {
+            @PathVariable Double balance,
+            HttpServletRequest request) throws IllegalAccessException {
+        String url = request.getRequestURL().toString();
+        fileGateway.WriteToFile("logs.txt", url);
 
         if (accountService.getAccountById(idSender).isEmpty() || accountService.getAccountById(idReceiver).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
